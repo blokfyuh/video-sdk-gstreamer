@@ -184,7 +184,7 @@ if [ $retval -ne 0 ]; then
 	cd $BASEDIR
 	return 1
 fi
-    ./autogen.sh --prefix=/opt/xilinx/vvas --disable-gtk-doc && \
+    ./autogen.sh --prefix=/opt/xilinx/vvas --disable-gtk-doc --enable-introspection=yes && \
     make -j$cpu_count && sudo make install && \
 retval=$?
 if [ $retval -ne 0 ]; then
@@ -202,7 +202,7 @@ cd /tmp/ && wget https://gstreamer.freedesktop.org/src/gst-plugins-good/gst-plug
     tar -xvf gst-plugins-good-1.16.2.tar.xz && cd gst-plugins-good-1.16.2 && \
     cd common && patch -p1 < /tmp/0001-build-Adapt-to-backwards-incompatible-change-in-GNU-.patch && cd .. && \
     patch -p1 < /tmp/0001-Use-helper-function-to-map-colorimetry-parameters.patch && \
-    ./autogen.sh --prefix=/opt/xilinx/vvas --disable-gtk-doc && \
+    ./autogen.sh --prefix=/opt/xilinx/vvas --disable-gtk-doc --enable-introspection=yes && \
     make -j$cpu_count && sudo make install
 retval=$?
 if [ $retval -ne 0 ]; then
@@ -213,6 +213,19 @@ fi
 cd $BASEDIR
 rm -rf /tmp/gst-plugins-good-1.16.2*
 
+# GStreamer ugly package installation
+cd /tmp/ && wget https://gstreamer.freedesktop.org/src/gst-plugins-ugly/gst-plugins-ugly-1.16.2.tar.xz --no-check-certificate && \
+    tar -xvf gst-plugins-ugly-1.16.2.tar.xz && cd gst-plugins-ugly-1.16.2 && \
+    ./autogen.sh --prefix=/opt/xilinx/vvas --disable-gtk-doc --enable-introspection=yes && make -j$cpu_count && sudo make install
+retval=$?
+if [ $retval -ne 0 ]; then
+	echo "Unable to install ugly gstreamer plugins ($retval)"
+        cd $BASEDIR
+	return 1
+fi
+cd $BASEDIR
+rm -rf /tmp/gst-plugins-ugly-1.16.2*
+
 # GStreamer bad package installation
 cp ./patches/0001-Update-Colorimetry-and-SEI-parsing-for-HDR10.patch /tmp
 cp ./patches/0001-Derive-src-fps-from-vui_time_scale-vui_num_units_in_.patch /tmp
@@ -221,7 +234,7 @@ cd /tmp/ && wget https://gstreamer.freedesktop.org/src/gst-plugins-bad/gst-plugi
     cd common && patch -p1 < /tmp/0001-build-Adapt-to-backwards-incompatible-change-in-GNU-.patch && cd .. && \
     patch -p1 < /tmp/0001-Update-Colorimetry-and-SEI-parsing-for-HDR10.patch && \
     patch -p1 < /tmp/0001-Derive-src-fps-from-vui_time_scale-vui_num_units_in_.patch && \
-    ./autogen.sh --prefix=/opt/xilinx/vvas --disable-gtk-doc --disable-openexr --disable-yadif --disable-mpegpsmux && make -j$cpu_count && sudo make install
+    ./autogen.sh --prefix=/opt/xilinx/vvas --disable-gtk-doc --enable-introspection=yes --disable-openexr --disable-yadif --disable-mpegpsmux && make -j$cpu_count && sudo make install
 retval=$?
 if [ $retval -ne 0 ]; then
 	echo "Unable to install bad gstreamer plugins ($retval)"
@@ -234,7 +247,7 @@ rm -rf /tmp/gst-plugins-bad-1.16.2*
 # GStreamer libav package installation
 cd /tmp/ && wget https://gstreamer.freedesktop.org/src/gst-libav/gst-libav-1.16.2.tar.xz --no-check-certificate && \
     tar -xvf gst-libav-1.16.2.tar.xz && cd gst-libav-1.16.2 && \
-    ./autogen.sh --prefix=/opt/xilinx/vvas --disable-gtk-doc  && make -j$cpu_count && sudo make install
+    ./autogen.sh --prefix=/opt/xilinx/vvas --disable-gtk-doc --enable-introspection=yes && make -j$cpu_count && sudo make install
 retval=$?
 if [ $retval -ne 0 ]; then
 	echo "Unable to install gstreamer libav ($retval)"
@@ -281,4 +294,4 @@ rm -rf ~/.cache/gstreamer-1.0/
 
 echo "#######################################################################"
 echo "########         GStreamer setup completed successful          ########"
-echo"#######################################################################"
+echo "#######################################################################"
