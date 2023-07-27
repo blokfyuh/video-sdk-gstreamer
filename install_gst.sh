@@ -157,7 +157,7 @@ cp ./patches/0001-build-Adapt-to-backwards-incompatible-change-in-GNU-.patch /tm
 cd /tmp/ && wget https://gstreamer.freedesktop.org/src/gstreamer/gstreamer-1.16.2.tar.xz --no-check-certificate && \
     tar -xvf gstreamer-1.16.2.tar.xz && cd gstreamer-1.16.2 && \
     cd common && patch -p1 < /tmp/0001-build-Adapt-to-backwards-incompatible-change-in-GNU-.patch && cd .. && \
-    ./autogen.sh --prefix=/opt/xilinx/vvas --disable-gtk-doc
+    ./autogen.sh --prefix=/opt/xilinx/vvas --disable-gtk-doc --enable-introspection=yes
     make -j$cpu_count && sudo make install
 retval=$?
 if [ $retval -ne 0 ]; then
